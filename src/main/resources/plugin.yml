@@ -1,0 +1,48 @@
+name: Railroad
+version: ${project.version}
+main: io.github.seanlego23.railroad.Railroad
+api-version: 1.16
+prefix: Railroad
+softdepend: [ WorldGuard, WorldEdit, Vault ]
+authors: [ seanlego23 ]
+description: A plugin that allows you to create and manage a railroad in your world/s.
+website: https://seanlego23.github.io
+commands:
+   railroad:
+      description: Main plugin command
+      usage: /railroad <conf|dest|help|rail|reload|station|track|wand>
+      permission: railroad.railroad
+      aliases: [rr]
+permissions:
+   railroad.*:
+      description: Gives access to all Railroad commands
+      children:
+         railroad.railroad: true
+         railroad.manager.3: true
+         railroad.reload: true
+         railroad.conf.*: true
+      default: op
+   railroad.railroad:
+      description: Gives access to the Railroad plugin main command
+      default: true
+   railroad.reload:
+      description: Allows the player to reload the plugin.
+      default: op
+   railroad.conf.*:
+      description: Gives access to all subsets of /railroad conf
+      default: op
+   railroad.manager.1:
+      description: Allows access to the railroad wand.
+      children:
+         railroad.railroad: true
+      default: false
+   railroad.manager.2:
+      description: Allows access to the railroad world config to a/an specified world/s.
+      children:
+         railroad.manager.1: true
+      default: false
+   railroad.manager.3:
+      description: Allows a player to manage all the railroads on this server.
+      children:
+         railroad.manager.2: true
+      default: false

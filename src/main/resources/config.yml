@@ -1,0 +1,33 @@
+#----------------------------------------------------------
+#---------------------Railroad Plugin----------------------
+#---Author: seanlego23 ------------------------------------
+#---Version: 1.0 ------------------------------------------
+#---Release Date: 12/20/2020 ------------------------------
+#---Github: https://github.com/seanlego23/Railroad --------
+#----------------------------------------------------------
+
+#A railroad station is where players will decide which
+#destination they would like to go to. (Only destinations
+#that are connected to a that station).
+station:
+
+   #List of items that can't be used to select a destination
+   #Blocks like air and barrier are automatically not allowed.
+   #Any entity that could go away within seconds is not allowed, as well as players.
+   #All other entities are allowed.
+   #IF you put one of the default selection method items (such as Lectern)
+   #and then use that selection method, the results are undefined,
+   #so don't do it.
+   selection-blacklist:
+      #- furnace
+
+   #The default selection method can be one of the following:
+   #GUI, Lectern, Button, Item_Frame, or Custom
+   #If Custom, another plugin must register the selection
+   #method with the plugin manager, and it must be a valid
+   #selection method.
+   default-selection-method:
+
+   #The item to select blocks or entities with to bind
+   #them to a station. Must be a valid item, not an entity.
+   binding-item: minecraft:wooden_pickaxe

@@ -1,0 +1,17 @@
+#----------------------------------------------------------
+#---------------------Railroad Plugin----------------------
+#---Author: seanlego23 ------------------------------------
+#---Version: 1.0 ------------------------------------------
+#---Release Date: 12/20/2020 ------------------------------
+#---Github: https://github.com/seanlego23/Railroad --------
+#----------------------------------------------------------
+
+#A railroad station is where players will decide which
+#destination they would like to go to. (Only destinations
+#that are connected to a that station).
+station:
+
+   #List of items that can't be used to select a destination
+   #Blocks like air and barrier are automatically not allowed.
+   item-selection-blacklist:
+   #- minecraft:furnace
