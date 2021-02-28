@@ -228,7 +228,7 @@ public final class RUID implements Externalizable {
 		try {
 			typeField.set(this, newType);
 		} catch (IllegalAccessException e) {
-			throw new ClassNotFoundException("Failed to set 'type' field.", e);
+			throw new ClassNotFoundException("Failed to set 'type' field in RUID deserialization.", e);
 		}
 
 		String idSignifier = (String) in.readObject();
@@ -261,7 +261,7 @@ public final class RUID implements Externalizable {
 		try {
 			byteField.set(this, bytes);
 		} catch (IllegalAccessException e) {
-			throw new ClassNotFoundException("Failed to set 'bytes' field.", e);
+			throw new ClassNotFoundException("Failed to set 'bytes' field in RUID deserialization.", e);
 		}
 
 		this.readFooter(in);
@@ -280,7 +280,7 @@ public final class RUID implements Externalizable {
 	private void readHeader(ObjectInput in) throws IOException, ClassNotFoundException {
 		char left = in.readChar();
 		if (left != '{')
-			throw new ClassNotFoundException("'{' is missing from the start of RUID.");
+			throw new ClassNotFoundException("'{' is missing from the start of RUID serialization.");
 
 		String name = (String) in.readObject();
 		if (!name.equals("RUID"))
@@ -294,6 +294,6 @@ public final class RUID implements Externalizable {
 	private void readFooter(ObjectInput in) throws IOException, ClassNotFoundException {
 		char right = in.readChar();
 		if (right != '}')
-			throw new ClassNotFoundException("'}' is missing  the end of RUID.");
+			throw new ClassNotFoundException("'}' is missing  the end of RUID serialization.");
 	}
 }
