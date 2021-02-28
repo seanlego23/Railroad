@@ -102,6 +102,10 @@ public class Rail {
 		return this.setCurrentRailShape(this.defaultRailShape);
 	}
 
+	public Direction getStartDirection() {
+		return this.startDirection;
+	}
+
 	public static boolean materialIsRail(@NotNull Material material) {
 		switch (material) {
 			case RAIL:
