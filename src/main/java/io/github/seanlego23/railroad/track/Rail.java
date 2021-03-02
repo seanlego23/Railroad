@@ -15,41 +15,49 @@ public class Rail {
 		ACTIVATOR
 	}
 
-	//UP, NORMAL, CURVED_LEFT, CURVED_RIGHT
-	public enum RailShape {
-		NORMAL,
-		UP,
-		CURVED_LEFT,
-		CURVED_RIGHT;
+	public enum Shape {
+		NORTH_SOUTH,
+		EAST_WEST,
+		ASCENDING_EAST,
+		ASCENDING_WEST,
+		ASCENDING_NORTH,
+		ASCENDING_SOUTH,
+		SOUTH_EAST,
+		SOUTH_WEST,
+		NORTH_WEST,
+		NORTH_EAST;
 
-		public boolean isCurved() {
-			return this == CURVED_LEFT || this == CURVED_RIGHT;
-		}
-
-		public static RailShape getRailShape(@NotNull org.bukkit.block.data.Rail.Shape shape) {
+		public static Shape getShape(org.bukkit.block.data.Rail.Shape shape) {
 			switch (shape) {
 				case NORTH_SOUTH:
+					return NORTH_SOUTH;
 				case EAST_WEST:
-					return NORMAL;
+					return EAST_WEST;
 				case ASCENDING_EAST:
+					return ASCENDING_EAST;
 				case ASCENDING_WEST:
+					return ASCENDING_WEST;
 				case ASCENDING_NORTH:
+					return ASCENDING_NORTH;
 				case ASCENDING_SOUTH:
-					return UP;
+					return ASCENDING_SOUTH;
 				case SOUTH_EAST:
+					return SOUTH_EAST;
+				case SOUTH_WEST:
+					return SOUTH_WEST;
 				case NORTH_WEST:
-					return CURVED_RIGHT;
+					return NORTH_WEST;
 				default:
-					return CURVED_LEFT;
+					return NORTH_EAST;
 			}
 		}
 	}
 
 	private final Location location;
 	private final RailType railType;
-	private final RailShape defaultRailShape;
+	private final Shape defaultShape;
 	private final Direction startDirection;
-	private RailShape currentRailShape;
+	private Shape currentShape;
 
 	public Rail(@NotNull Location location, @NotNull RailType railType, @NotNull Direction startDirection) {
 		this.location = location;
@@ -58,22 +66,10 @@ public class Rail {
 		if (world == null)
 			throw new NullPointerException();
 		org.bukkit.block.data.Rail railData = (org.bukkit.block.data.Rail) world.getBlockAt(location).getBlockData();
-		RailShape shape = RailShape.getRailShape(railData.getShape());
+		Shape shape = Shape.getShape(railData.getShape());
 		this.startDirection = startDirection;
-		if (shape.isCurved()) {
-			 if (this.startDirection == Direction.EAST)
-			 	if (shape == RailShape.CURVED_LEFT)
-			 		shape = RailShape.CURVED_RIGHT;
-			 	else
-			 		shape = RailShape.CURVED_LEFT;
-			else if (this.startDirection == Direction.WEST)
-				if (shape == RailShape.CURVED_LEFT)
-					shape = RailShape.CURVED_RIGHT;
-				else
-					shape = RailShape.CURVED_LEFT;
-		}
-		this.currentRailShape = shape;
-		this.defaultRailShape = shape;
+		this.currentShape = shape;
+		this.defaultShape = shape;
 	}
 
 	public Location getLocation() {
@@ -84,22 +80,22 @@ public class Rail {
 		return this.railType;
 	}
 
-	public RailShape getCurrentRailShape() {
-		return this.currentRailShape;
+	public Shape getCurrentShape() {
+		return this.currentShape;
 	}
 
-	public RailShape getDefaultRailShape() {
-		return this.defaultRailShape;
+	public Shape getDefaultShape() {
+		return this.defaultShape;
 	}
 
-	public RailShape setCurrentRailShape(RailShape shape) {
-		RailShape old = this.currentRailShape;
-		this.currentRailShape = shape;
+	public Shape setCurrentShape(Shape shape) {
+		Shape old = this.currentShape;
+		this.currentShape = shape;
 		return old;
 	}
 
-	public RailShape setCurrentToDefaultRailShape() {
-		return this.setCurrentRailShape(this.defaultRailShape);
+	public Shape setCurrentToDefaultShape() {
+		return this.setCurrentShape(this.defaultShape);
 	}
 
 	public Direction getStartDirection() {
