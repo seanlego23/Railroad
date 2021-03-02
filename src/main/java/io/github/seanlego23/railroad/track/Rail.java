@@ -102,6 +102,25 @@ public class Rail {
 		return this.startDirection;
 	}
 
+	public Direction getOppositeDirection() {
+		switch (this.defaultShape) {
+			case SOUTH_EAST:
+			case NORTH_EAST:
+				return (this.startDirection == Direction.SOUTH || this.startDirection == Direction.NORTH)
+						? Direction.EAST : this.startDirection;
+			case SOUTH_WEST:
+			case NORTH_WEST:
+				return (this.startDirection == Direction.SOUTH || this.startDirection == Direction.NORTH)
+						? Direction.WEST : this.startDirection;
+			case NORTH_SOUTH:
+			case ASCENDING_NORTH:
+			case ASCENDING_SOUTH:
+				return (this.startDirection == Direction.NORTH) ? Direction.SOUTH : this.startDirection;
+			default:
+				return (this.startDirection == Direction.EAST) ? Direction.WEST : this.startDirection;
+		}
+	}
+
 	public static boolean materialIsRail(@NotNull Material material) {
 		switch (material) {
 			case RAIL:
