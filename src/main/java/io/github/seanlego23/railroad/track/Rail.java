@@ -51,6 +51,18 @@ public class Rail {
 					return NORTH_EAST;
 			}
 		}
+
+		public boolean isCurved() {
+			switch (this) {
+				case SOUTH_EAST:
+				case SOUTH_WEST:
+				case NORTH_WEST:
+				case NORTH_EAST:
+					return true;
+				default:
+					return false;
+			}
+		}
 	}
 
 	private final Location location;
