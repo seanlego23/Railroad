@@ -23,6 +23,23 @@ public enum Direction {
 		return this.vector.clone();
 	}
 
+	public Direction getOpposite() {
+		switch (this) {
+			case SOUTH:
+				return NORTH;
+			case NORTH:
+				return SOUTH;
+			case EAST:
+				return WEST;
+			case WEST:
+				return EAST;
+			case UP:
+				return DOWN;
+			default:
+				return UP;
+		}
+	}
+
 	//If in between two directions:
 	//UP and DOWN are top priority
 	//otherwise SOUTH < EAST < NORTH < WEST < SOUTH
