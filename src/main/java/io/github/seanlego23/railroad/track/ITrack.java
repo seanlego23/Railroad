@@ -36,8 +36,8 @@ public interface ITrack extends RailroadTarget {
 	int getDepth();
 	boolean contains(Location location);
 	@Nullable Rail getRail(Location location);
-	@NotNull Location getStart();
-	@NotNull Location getEnd();
+	@NotNull Rail getStart();
+	@NotNull Rail getEnd();
 	@NotNull List<Junction> getJunctions();
 	@NotNull Set<IDestination> getConnectedDestinations();
 	@Nullable Connection getConnection();
