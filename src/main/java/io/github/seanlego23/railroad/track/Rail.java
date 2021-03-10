@@ -144,4 +144,14 @@ public class Rail {
 				return false;
 		}
 	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (o == null)
+			return false;
+		if (!(o instanceof Rail))
+			return false;
+		Rail other = (Rail) o;
+		return this.location.equals(other.location);
+	}
 }
