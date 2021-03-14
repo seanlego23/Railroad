@@ -1,17 +1,16 @@
 package io.github.seanlego23.railroad.track;
 
 import io.github.seanlego23.railroad.connection.Connection;
+import io.github.seanlego23.railroad.connection.Connector;
+import io.github.seanlego23.railroad.connection.IllegalConnectionException;
 import io.github.seanlego23.railroad.destinations.IDestination;
-import io.github.seanlego23.railroad.util.target.RUID;
-import io.github.seanlego23.railroad.util.target.RailroadTarget;
+import io.github.seanlego23.railroad.world.World;
 import org.bukkit.Location;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
-import java.util.List;
 import java.util.Set;
 
-public interface ITrack extends RailroadTarget {
+public interface ITrack extends Connector {
 	enum Way {
 		/**
 		 * One direction towards the start of the rail.
@@ -29,17 +28,21 @@ public interface ITrack extends RailroadTarget {
 		BOTH_WAYS
 	}
 
+	@NotNull World getWorld();
 	@NotNull ITrack.Way getWay();
 	void setWay(@NotNull ITrack.Way way);
 	int getLength();
 	int getWidth();
 	int getDepth();
 	boolean contains(Location location);
-	@Nullable Rail getRail(Location location);
 	@NotNull Rail getStart();
 	@NotNull Rail getEnd();
-	@NotNull List<Junction> getJunctions();
 	@NotNull Set<IDestination> getConnectedDestinations();
-	@Nullable Connection getConnection();
-	@NotNull RUID getRUID();
+	@NotNull Connection getConnection();
+	void connectTo(boolean start, ITrackStop stop) throws IllegalConnectionException;
+
+	//TODO: Finish after service provider is connected
+	default ITrack split(Location location) {
+		return null;
+	}
 }
