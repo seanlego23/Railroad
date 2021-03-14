@@ -20,4 +20,12 @@ public class TrackManager {
 	public ITrack getCachedTrack(Location location) {
 		return null;
 	}
+
+	private ITrack createTrack(Class<? extends ITrack> clazz) {
+		return null;
+	}
+
+	private ITrack createDefaultTrack() {
+		return null;
+	}
 }
