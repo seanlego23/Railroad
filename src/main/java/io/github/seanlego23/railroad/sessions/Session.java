@@ -21,14 +21,15 @@ public class Session {
 		return this.localSessionMap.get(world);
 	}
 
-	public boolean createLocalSession(@NotNull World world) {
+	public LocalSession createLocalSession(@NotNull World world) {
 		return this.createLocalSession(world, null);
 	}
 
-	public boolean createLocalSession(@NotNull World world, @Nullable SelectionObject object) {
+	public LocalSession createLocalSession(@NotNull World world, @Nullable SelectionObject object) {
 		if (this.localSessionMap.containsKey(world))
-			return false;
-		this.localSessionMap.put(world, new LocalSession(world, this.user, object));
-		return true;
+			return this.localSessionMap.get(world);
+		LocalSession newLS = new LocalSession(world, this.user, object);
+		this.localSessionMap.put(world, newLS);
+		return newLS;
 	}
 }
