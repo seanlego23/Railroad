@@ -47,7 +47,7 @@ public class StationCommand{
 
 				user.getWorld().getStationManager().getStations().forEach(station -> possible.add(station.getName()));
 			} else if (user.isManager() && args[1].equalsIgnoreCase("create")) {
-				user.getWorld().getTrackManager().getTracks().forEach(track -> possible.add(track.getName()));
+				user.getWorld().getLineManager().getTracks().forEach(track -> possible.add(track.getName()));
 			} else if (args[1].equalsIgnoreCase("info")) {
 				user.getWorld().getStationManager().getStations().forEach(station -> possible.add(station.getName()));
 			}
@@ -230,7 +230,7 @@ public class StationCommand{
 			}
 		} else if (args.length == 4) {
 			if (args[1].equalsIgnoreCase("create")) {
-				ILine track = user.getWorld().getTrackManager().getTrack(args[2]);
+				ILine track = user.getWorld().getLineManager().getTrack(args[2]);
 				if (track != null && user.isManager(track.getWorld())) {
 					for (IStation station : track.getStations())
 						if (station.getName().equalsIgnoreCase(args[3])) {
