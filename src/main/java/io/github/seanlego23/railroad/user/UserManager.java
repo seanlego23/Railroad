@@ -28,8 +28,6 @@ public class UserManager {
 			this.users.put(player.getUniqueId(), user);
 			SessionManager sessionManager = this.plugin.getSessionManager();
 			sessionManager.createSession(user);
-			for (World world: this.plugin.getWorldManager().getWorlds())
-				sessionManager.getSession(user).createLocalSession(world);
 		}
 	}
 
