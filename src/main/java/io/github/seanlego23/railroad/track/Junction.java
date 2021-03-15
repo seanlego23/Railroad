@@ -1,9 +1,12 @@
 package io.github.seanlego23.railroad.track;
 
 import io.github.seanlego23.railroad.Railroad;
+import io.github.seanlego23.railroad.RailroadException;
 import io.github.seanlego23.railroad.connection.Connector;
+import io.github.seanlego23.railroad.connection.IllegalConnectionException;
 import io.github.seanlego23.railroad.destinations.IDestination;
 import io.github.seanlego23.railroad.stations.IStation;
+import io.github.seanlego23.railroad.util.target.IncorrectRUIDTypeException;
 import io.github.seanlego23.railroad.util.target.RUID;
 import io.github.seanlego23.railroad.util.world.Direction;
 import org.bukkit.Location;
@@ -69,6 +72,7 @@ public final class Junction implements Connector, ITrackStop {
 		}
 	}
 
+	@Deprecated
 	public Junction() {
 		this.ruid = null;
 		this.location = null;
@@ -89,6 +93,7 @@ public final class Junction implements Connector, ITrackStop {
 		this.secondConnector = secondConnector.getID();
 		this.thirdConnector = thirdConnector.getID();
 		this.fourthConnector = null;
+
 
 		this.getStops(firstConnector, secondConnector, thirdConnector, null);
 		this.junctionType = JunctionType.createJunctionType(location, firstConnector, secondConnector, thirdConnector,
@@ -196,6 +201,38 @@ public final class Junction implements Connector, ITrackStop {
 		return new HashSet<>(this.fourthTrackStops);
 	}
 
+	public HalfJunction getInfoExcluding(RUID from) {
+		List<RUID> connectors = new ArrayList<>(Arrays.asList(this.firstConnector, this.secondConnector,
+				this.thirdConnector, this.fourthConnector));
+		List<Set<RUID>> stops = new ArrayList<>(Arrays.asList(this.firstTrackStops, this.secondTrackStops,
+				this.thirdTrackStops, this.fourthTrackStops));
+		if (connectors.get(3) == null) {
+			connectors.remove(3);
+			stops.remove(3);
+		}
+		boolean found = false;
+		for (int i = 0; i < connectors.size(); i++) {
+			RUID connector = connectors.get(i);
+			if (connector.equals(from)) {
+				connectors.remove(connector);
+				stops.remove(i);
+				found = true;
+				break;
+			}
+		}
+
+		if (!found)
+			return null;
+		if (connectors.size() == 2)
+			return new HalfJunction(this.location, this.junctionType,
+									connectors.get(0), connectors.get(1), null,
+									stops.get(0), stops.get(1), new HashSet<>());
+		else
+			return new HalfJunction(this.location, this.junctionType,
+									connectors.get(0), connectors.get(1), connectors.get(2),
+									stops.get(0), stops.get(1), stops.get(2));
+	}
+
 	protected boolean addTrackStop(int order, @NotNull ITrackStop stop) {
 		return this.addTrackStop(order, stop.getID());
 	}
@@ -248,6 +285,178 @@ public final class Junction implements Connector, ITrackStop {
 	@Override
 	public @Nullable Rail getRail(Location location) {
 		return location.equals(this.location) ? this.rail : null;
+	}
+
+	public void connectTo(Connector connector) throws IllegalConnectionException {
+		if (!(connector instanceof Junction) && !(connector instanceof ITrack))
+			throw new IllegalConnectionException("Junction's can only connect to another Junction or an ITrack.");
+		if (connector instanceof Junction) {
+			Junction other = (Junction) connector;
+
+			boolean thisAlreadyConnect = false;
+			if (this.firstConnector.equals(other.ruid) || this.secondConnector.equals(other.ruid))
+				thisAlreadyConnect = true;
+			if (!thisAlreadyConnect) {
+				if (this.thirdConnector == null) {
+					Connector firstConnector, secondConnector;
+					try {
+						firstConnector = this.firstConnector.getType() == RUID.IDType.TRACK ?
+										 TrackManager.getTrack(this.firstConnector) :
+										 TrackManager.getJunction(this.firstConnector);
+						secondConnector = this.secondConnector.getType() == RUID.IDType.TRACK ?
+										  TrackManager.getTrack(this.secondConnector) :
+										  TrackManager.getJunction(this.secondConnector);
+						if (firstConnector == null || secondConnector == null)
+							throw new RailroadException("Connector/s that should exist, do not.");
+					} catch (IncorrectRUIDTypeException e) {
+						throw new IllegalConnectionException("Invalid RUID Connector in Junction " +
+															 this.ruid.toString());
+					}
+					JunctionType newType;
+					try {
+						newType = JunctionType.createJunctionType(this.location, firstConnector, secondConnector, other,
+								null);
+					} catch (InvalidJunctionLocationException e) {
+						throw new IllegalConnectionException("New JunctionType is invalid.", e);
+					}
+					try {
+						junctionTypeField.set(this, newType);
+						thirdConnectorField.set(this, other.ruid);
+					} catch (IllegalAccessException e) {
+						throw new IllegalConnectionException("Could not connect to Junction.", e);
+					}
+				} else if (this.fourthConnector == null && !this.thirdConnector.equals(other.ruid)) {
+					Connector firstConnector, secondConnector, thirdConnector;
+					try {
+						firstConnector = this.firstConnector.getType() == RUID.IDType.TRACK ?
+										 TrackManager.getTrack(this.firstConnector) :
+										 TrackManager.getJunction(this.firstConnector);
+						secondConnector = this.secondConnector.getType() == RUID.IDType.TRACK ?
+										  TrackManager.getTrack(this.secondConnector) :
+										  TrackManager.getJunction(this.secondConnector);
+						thirdConnector = this.thirdConnector.getType() == RUID.IDType.TRACK ?
+										 TrackManager.getTrack(this.thirdConnector) :
+										 TrackManager.getJunction(this.thirdConnector);
+						if (firstConnector == null || secondConnector == null || thirdConnector == null)
+							throw new RailroadException("Connector/s that should exist, do not.");
+					} catch (IncorrectRUIDTypeException e) {
+						throw new IllegalConnectionException("Invalid RUID Connector in Junction " + this.ruid.toString());
+					}
+					JunctionType newType;
+					try {
+						newType = JunctionType.createJunctionType(this.location, firstConnector, secondConnector,
+								thirdConnector, other);
+					} catch (InvalidJunctionLocationException e) {
+						throw new IllegalConnectionException("New JunctionType is invalid.", e);
+					}
+					try {
+						junctionTypeField.set(this, newType);
+						thirdConnectorField.set(this, other.ruid);
+					} catch (IllegalAccessException e) {
+						throw new IllegalConnectionException("Could not connect to Junction.", e);
+					}
+				} else if (this.fourthConnector != null && !this.thirdConnector.equals(other.ruid) &&
+						   !this.fourthConnector.equals(other.ruid))
+					throw new IllegalConnectionException("This Junction is full.");
+			}
+
+			if (other.thirdConnector == null) {
+				Connector firstConnector, secondConnector;
+				try {
+					firstConnector = other.firstConnector.getType() == RUID.IDType.TRACK ?
+								TrackManager.getTrack(other.firstConnector) :
+							 	TrackManager.getJunction(other.firstConnector);
+					secondConnector = other.secondConnector.getType() == RUID.IDType.TRACK ?
+								TrackManager.getTrack(other.secondConnector) :
+								TrackManager.getJunction(other.secondConnector);
+					if (firstConnector == null || secondConnector == null)
+						throw new RailroadException("Connector/s that should exist, do not.");
+				} catch (IncorrectRUIDTypeException e) {
+					throw new IllegalConnectionException("Invalid RUID Connector in Junction " + other.ruid.toString());
+				}
+				JunctionType newType;
+				try {
+					newType = JunctionType.createJunctionType(other.location, firstConnector, secondConnector, other,
+							null);
+				} catch (InvalidJunctionLocationException e) {
+					throw new IllegalConnectionException("New JunctionType is invalid.", e);
+				}
+
+				try {
+					junctionTypeField.set(other, newType);
+					thirdConnectorField.set(other, this.ruid);
+				} catch (IllegalAccessException e) {
+					throw new IllegalConnectionException("Could not connect to Junction.", e);
+				}
+			} else if (other.fourthConnector == null) {
+				Connector firstConnector, secondConnector, thirdConnector;
+				try {
+					firstConnector = other.firstConnector.getType() == RUID.IDType.TRACK ?
+									 TrackManager.getTrack(other.firstConnector) :
+									 TrackManager.getJunction(other.firstConnector);
+					secondConnector = other.secondConnector.getType() == RUID.IDType.TRACK ?
+					TrackManager.getTrack(other.secondConnector) :
+									  TrackManager.getJunction(other.secondConnector);
+					thirdConnector = other.thirdConnector.getType() == RUID.IDType.TRACK ?
+									 TrackManager.getTrack(other.thirdConnector) :
+									 TrackManager.getJunction(other.thirdConnector);
+					if (firstConnector == null || secondConnector == null || thirdConnector == null)
+						throw new RailroadException("Connector/s that should exist, do not.");
+				} catch (IncorrectRUIDTypeException e) {
+					throw new IllegalConnectionException("Invalid RUID Connector in Junction " + other.ruid.toString());
+				}
+				JunctionType newType;
+				try {
+					newType = JunctionType.createJunctionType(other.location, firstConnector, secondConnector,
+							thirdConnector, other);
+				} catch (InvalidJunctionLocationException e) {
+					throw new IllegalConnectionException("New JunctionType is invalid.", e);
+				}
+
+				try {
+					junctionTypeField.set(other, newType);
+					thirdConnectorField.set(other, this.ruid);
+				} catch (IllegalAccessException e) {
+					throw new IllegalConnectionException("Could not connect to Junction.", e);
+				}
+			} else
+				throw new IllegalConnectionException("Junction is full.");
+		} else {
+			if (this.fourthConnector != null)
+				throw new IllegalConnectionException("Junction is full.");
+
+			ITrack track = (ITrack) connector;
+			Connector firstConnector, secondConnector, thirdConnector;
+			try {
+				firstConnector = this.firstConnector.getType() == RUID.IDType.TRACK ?
+								 TrackManager.getTrack(this.firstConnector) :
+								 TrackManager.getJunction(this.firstConnector);
+				secondConnector = this.secondConnector.getType() == RUID.IDType.TRACK ?
+								  TrackManager.getTrack(this.secondConnector) :
+								  TrackManager.getJunction(this.secondConnector);
+				thirdConnector = this.thirdConnector.getType() == RUID.IDType.TRACK ?
+								 TrackManager.getTrack(this.thirdConnector) :
+								 TrackManager.getJunction(this.thirdConnector);
+				if (firstConnector == null || secondConnector == null || thirdConnector == null)
+					throw new RailroadException("Connector/s that should exist, do not.");
+			} catch (IncorrectRUIDTypeException e) {
+				throw new IllegalConnectionException("Invalid RUID Connector in Junction " + this.ruid.toString());
+			}
+			JunctionType newType;
+			try {
+				newType = JunctionType.createJunctionType(this.location, firstConnector, secondConnector,
+						thirdConnector, track);
+			} catch (InvalidJunctionLocationException e) {
+				throw new IllegalConnectionException("New JunctionType is invalid.", e);
+			}
+
+			try {
+				junctionTypeField.set(this, newType);
+				fourthConnectorField.set(this, track.getID());
+			} catch (IllegalAccessException e) {
+				throw new IllegalConnectionException("Could not connect to Junction.", e);
+			}
+		}
 	}
 
 	@Override
