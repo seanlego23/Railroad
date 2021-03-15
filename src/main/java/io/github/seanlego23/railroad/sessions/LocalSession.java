@@ -17,17 +17,12 @@ import org.jetbrains.annotations.Nullable;
 public class LocalSession {
 	private final User user;
 	private final World world;
-	private SelectionObject selectionObject;
-	private CuboidRegion region;
+	private SelectionObject selectionObject = null;
+	private CuboidRegion region = null;
 
 	public LocalSession(@NotNull World world, @NotNull User user) {
-		this(world, user, null);
-	}
-
-	public LocalSession(@NotNull World world, @NotNull User user, @Nullable SelectionObject object) {
 		this.world = world;
 		this.user = user;
-		this.selectionObject = object;
 	}
 
 	public @Nullable SelectionObject getSelectionObject() {
