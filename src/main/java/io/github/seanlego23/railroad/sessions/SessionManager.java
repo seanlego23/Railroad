@@ -14,11 +14,12 @@ public class SessionManager {
 		this.plugin = plugin;
 	}
 
-	public boolean createSession(User user) {
+	public Session createSession(User user) {
 		if (this.sessionMap.containsKey(user))
-			return false;
-		this.sessionMap.put(user, new Session(user));
-		return true;
+			return this.sessionMap.get(user);
+		Session newSession = new Session(user);
+		this.sessionMap.put(user, newSession);
+		return newSession;
 	}
 
 	public boolean removeSession(User user) {
