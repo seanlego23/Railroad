@@ -39,7 +39,7 @@ public interface ITrack extends Connector {
 	@NotNull Rail getEnd();
 	@NotNull Set<IDestination> getConnectedDestinations();
 	@NotNull Connection getConnection();
-	void connectTo(boolean start, ITrackStop stop) throws IllegalConnectionException;
+	void connectTo(ITrackStop stop) throws IllegalConnectionException;
 
 	//TODO: Finish after service provider is connected
 	default ITrack split(Location location) {
