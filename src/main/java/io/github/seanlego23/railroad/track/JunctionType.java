@@ -804,9 +804,9 @@ public final class JunctionType implements Cloneable, Externalizable {
     }
 
     @Override
-    protected Object clone() throws CloneNotSupportedException {
-        JunctionType type = (JunctionType) super.clone();
-        if (type.leftOrientation == null)
+    protected Object clone() {
+        JunctionType type = new JunctionType();
+        if (this.leftOrientation == null)
             return type;
         try {
             leftOrientationField.set(type, new Pair<>(type.leftOrientation.getFirst(),
@@ -818,11 +818,16 @@ public final class JunctionType implements Cloneable, Externalizable {
             if (type.backwardOrientation != null)
                 backwardOrientationField.set(type, new Pair<>(type.backwardOrientation.getFirst(),
                         type.backwardOrientation.getSecond()));
-
             Map<Orientation, Set<Orientation>> newRestrictions = new HashMap<>();
             for (Map.Entry<Orientation, Set<Orientation>> entry : type.restrictions.entrySet())
                 newRestrictions.put(entry.getKey(), new HashSet<>(entry.getValue()));
             restrictionsField.set(type, newRestrictions);
+            leftField.set(type, this.left);
+            forwardField.set(type, this.forward);
+            rightField.set(type, this.right);
+            if (this.backward != null)
+                backwardField.set(type, this.backward);
+            rotationField.set(type, this.rotation);
         } catch (IllegalAccessException e) {
             e.printStackTrace();
             return new JunctionType();
