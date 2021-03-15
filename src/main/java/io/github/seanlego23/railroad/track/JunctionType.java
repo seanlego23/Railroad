@@ -418,6 +418,8 @@ public final class JunctionType implements Cloneable, Externalizable {
         }
     }
 
+    @SuppressWarnings("DeprecatedIsStillUsed")
+    @Deprecated
     public JunctionType() {
         this.leftOrientation = null;
         this.forwardOrientation = null;
